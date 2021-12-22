@@ -1,0 +1,12 @@
+FROM busybox as builder
+
+FROM gcr.io/distroless/java
+WORKDIR /app
+COPY TheComSunNetHttpServer.jar .
+COPY --from=builder /bin/wget /bin/wget
+
+CMD ["TheComSunNetHttpServer.jar","8080"]
+EXPOSE 8080
+USER nonroot
+HEALTHCHECK --start-period=5s --interval=2s --timeout=3s --retries=2 CMD ["/bin/wget", "-qO-", "--tries=1", "http://localhost:8080/"]
+
